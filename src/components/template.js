@@ -2,8 +2,9 @@ import React from 'react'
 import { IFrame } from './iframe'
 
 const Template = props => {
+    const propsData = props.data;
     const data = {
-        headerText: 'EEEEEE'
+        headerText: propsData?.themeName
     }
     return (
         <IFrame width="100%" height="100%" src="/template.html">

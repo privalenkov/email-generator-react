@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
 import FileUploaderDND from './dragAndDrop';
 
@@ -94,11 +94,18 @@ const Settings = props => {
         console.log(file);
         setFile(file);
     }
+
     const [themeName, setThemeName] = useState(" ");
     const handleThemeName = (e) => {
         setThemeName(e.target.value)
         console.log(themeName)
     }
+
+    useEffect(() => {
+
+        props.setData({themeName});
+        
+    }, [themeName])
     return (
         <SettingsPanel>
             <InputText type="text" value={ themeName } onChange={handleThemeName} placeholder="Theme Name"></InputText>
