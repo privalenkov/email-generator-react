@@ -1,23 +1,35 @@
-import logo from './logo.svg';
 import './App.css';
+import styled from 'styled-components';
+import Template from './components/template.js';
+import Settings from './components/settings.js';
 
 function App() {
+  const ipc = window.api
+  const Header = styled.header`
+    width: 100%;
+    background: #1E1E1E;
+    height: 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  `;
+  const CloseBtn = styled.div`
+    width: 10px;
+    margin: 8px;
+    border-radius: 100px;
+    height: 10px;
+    background: #e04264;
+    cursor: pointer;
+  `
+  const handle = () => ipc.send('toMain', 'closeApp')
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header><CloseBtn onClick={handle} className="closeBtn"></CloseBtn></Header>
+      <div className="view">
+        <Settings/>
+        <Template/>
+      </div>
     </div>
   );
 }
