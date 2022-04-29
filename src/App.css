@@ -16,15 +16,3 @@
 iframe {
   border: none;
 }
-
-iframe::-webkit-scrollbar {
-  width: 12px;               /* ширина scrollbar */
-}
-iframe::-webkit-scrollbar-track {
-  background: orange;        /* цвет дорожки */
-}
-iframe::-webkit-scrollbar-thumb {
-  background-color: blue;    /* цвет плашки */
-  border-radius: 20px;       /* закругления плашки */
-  border: 3px solid orange;  /* padding вокруг плашки */
-}

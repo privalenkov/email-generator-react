@@ -3,6 +3,7 @@ import './App.css';
 import styled from 'styled-components';
 import Template from './components/template.js';
 import Settings from './components/settings.js';
+import { AlertContainer } from "./components/alert/alertContainer";
 
 const Header = styled.header`
   width: 100%;
@@ -30,6 +31,7 @@ function App() {
   return (
     <div className="App">
       <Header><CloseBtn onClick={handle} className="closeBtn"></CloseBtn></Header>
+      <AlertContainer />
       <div className="view">
         <Settings setData={ handleData }/>
         <Template data={ data }/>

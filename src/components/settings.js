@@ -95,7 +95,7 @@ const Settings = props => {
         setFile(file);
     }
 
-    const [themeName, setThemeName] = useState(" ");
+    const [themeName, setThemeName] = useState("");
     const handleThemeName = (e) => {
         setThemeName(e.target.value)
         console.log(themeName)

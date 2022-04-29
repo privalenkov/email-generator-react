@@ -8,7 +8,7 @@ const Template = props => {
     }
     return (
         <IFrame width="100%" height="100%" src="/template.html">
-            <table width="100%" border="0" cellPadding="0" cellSpacing="0" align="center" className="full" bgcolor="#f5f5f5" style={{backgroundColor: '#f5f5f5'}}>
+            <table width="100%" border="0" cellPadding="0" cellSpacing="0" align="center" className="full">
                 <tbody>
                     <tr>
                         <td width="100%" valign="top" align="center">
