@@ -6,6 +6,8 @@ const AlertStyle = styled.div`
     width: 100%;
     background: #1E1E1E;
     padding: 20px 0;
+    margin-top: 10px;
+    position: relative;
     text-align: left;
     color: #ffffff;
     border-radius: 10px;
@@ -16,18 +18,29 @@ const AlertStyle = styled.div`
         animation: fadeOut .3s forwards;
     }
     @keyframes fadeIn {
-        from {
+        0% {
             opacity: 0;
+            transform: scale(0.9);
         }
-        to {
+        80% {
+            transform: scale(1.05);
+        }
+        100% {
             opacity: 1;
         }
     }
     @keyframes fadeOut {
-        from {
+        0% {
             opacity: 1;
         }
-        to {
+        50% {
+            transform: scale(1.05);
+
+        }
+        80% {
+            transform: scale(0.9);
+        }
+        100% {
             opacity: 0;
         }
     }
@@ -59,12 +72,24 @@ const AlertText = styled.div`
     padding-left: 20px;
 `;
 
-export const Alert = ({title, ...props}) => {
+export const Alert = ({title, dispatch, ...props}) => {
     const [show, setShow] = useState(true);
+
+    const handleClick = () => {
+        setShow(false);
+        dispatch({
+            type: 'REMOVE_ALERT',
+            id: props.id
+        });
+    }
 
     useEffect(() => {
         setTimeout(() => {
             setShow(false)
+            dispatch({
+                type: 'REMOVE_ALERT',
+                id: props.id
+            });
         }, 5000);
     }, []);
 
@@ -77,7 +102,7 @@ export const Alert = ({title, ...props}) => {
         >
             {state => <AlertStyle className={state}>
                 <AlertText>{title}</AlertText>
-                <CloseBtn onClick={() => setShow(false)}><div></div></CloseBtn>
+                <CloseBtn onClick={handleClick}><div></div></CloseBtn>
             </AlertStyle>
             }
         </Transition>

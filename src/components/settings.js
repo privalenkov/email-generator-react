@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from 'styled-components';
 import FileUploaderDND from './dragAndDrop';
+import { AlertContext } from './alert/alertProvider';
+import { v4 } from "uuid";
 
 const SettingsPanel = styled.div`
     padding: .5rem 1rem;
@@ -88,7 +90,7 @@ const BtnContainer = styled.div`
     margin-top: 15px;
 `
 const Settings = props => {
-
+    const dispatch = useContext(AlertContext);
     const [file, setFile] = useState(null);
     const handleDrop = (file) => {
         console.log(file);
@@ -98,14 +100,26 @@ const Settings = props => {
     const [themeName, setThemeName] = useState("");
     const handleThemeName = (e) => {
         setThemeName(e.target.value)
-        console.log(themeName)
     }
 
+    const handleBtn = (e) => {
+        e.preventDefault();
+        dispatch({
+            type: 'ADD_ALERT',
+            payload: {
+            id: v4(),
+            title: 'Notification',
+            type: 'INFO',
+            }
+        })
+    }
+    
     useEffect(() => {
-
+        
+        console.log(themeName)
         props.setData({themeName});
         
-    }, [themeName])
+    }, [themeName]);
     return (
         <SettingsPanel>
             <InputText type="text" value={ themeName } onChange={handleThemeName} placeholder="Theme Name"></InputText>
@@ -124,7 +138,7 @@ const Settings = props => {
             <InputText placeholder="Seed" type="number"  style={{marginTop: '15px'}}></InputText>
             <BtnContainer>
                 <ButtonCHIMP>TO MCHIMP</ButtonCHIMP>
-                <ButtonDownload>DOWNLOAD</ButtonDownload>
+                <ButtonDownload onClick={handleBtn}>DOWNLOAD</ButtonDownload>
             </BtnContainer>
         </SettingsPanel>
     );

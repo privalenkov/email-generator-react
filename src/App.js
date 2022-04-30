@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState  } from "react";
 import './App.css';
 import styled from 'styled-components';
 import Template from './components/template.js';
 import Settings from './components/settings.js';
-import { AlertContainer } from "./components/alert/alertContainer";
+
 
 const Header = styled.header`
   width: 100%;
@@ -15,23 +15,33 @@ const Header = styled.header`
   align-items: center;
 `;
 const CloseBtn = styled.div`
-  width: 10px;
+  width: 14px;
   margin: 8px;
   border-radius: 100px;
-  height: 10px;
+  height: 14px;
   background: #e04264;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  div {
+    width: 8px;
+    height: 8px;
+    background: url(./close-alert.svg) no-repeat;
+    background-size: contain;
+    opacity: 0.3;
+  }
 `
 
 function App() {
-  const ipc = window.api
+  const ipc = window.api;
   const [data, setData] = useState(null);
   const handleData = (data) => setData(data)
-  const handle = () => ipc.send('toMain', 'closeApp')
+  const handle = () => ipc.send('toMain', 'closeApp');
+
   return (
     <div className="App">
-      <Header><CloseBtn onClick={handle} className="closeBtn"></CloseBtn></Header>
-      <AlertContainer />
+      <Header><CloseBtn onClick={handle} className="closeBtn"><div></div></CloseBtn></Header>
       <div className="view">
         <Settings setData={ handleData }/>
         <Template data={ data }/>

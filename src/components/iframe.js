@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
@@ -23,9 +23,18 @@ export const IFrame = ({
   children,
   ...props
 }) => {
-    const contentRef = useRef(null)
-    let mountNode = contentRef?.current?.contentWindow?.document?.body;
-    console.log(mountNode)
+    const contentRef = useRef(null);
+    let [mountNode, setMountNode] = useState(null);
+    useEffect(() => {
+      setTimeout(() => {
+        setMountNode(contentRef?.current?.contentWindow?.document?.body);
+      }, 1000);
+    }, []);
+
+    useEffect(() => {
+      contentRef.current.src="/template.html";
+    }, []);
+  
     return (
       <div>
         {!mountNode && <ImageContainer><div></div></ImageContainer>}

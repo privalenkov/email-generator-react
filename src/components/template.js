@@ -7,7 +7,7 @@ const Template = props => {
         headerText: propsData?.themeName
     }
     return (
-        <IFrame width="100%" height="100%" src="/template.html">
+        <IFrame width="100%" height="100%">
             <table width="100%" border="0" cellPadding="0" cellSpacing="0" align="center" className="full">
                 <tbody>
                     <tr>
