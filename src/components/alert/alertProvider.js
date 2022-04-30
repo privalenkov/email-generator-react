@@ -1,7 +1,6 @@
 import React, { useReducer, createContext } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
-import { v4 } from 'uuid';
 import { Alert } from './alert';
 
 const AlertContainerStyle = styled.div`
@@ -10,7 +9,7 @@ const AlertContainerStyle = styled.div`
     top: 25px;
     z-index: 9999;
     margin-top: 10px;
-    right: 25px;
+    right: 15px;
 `;
 export const AlertContext = createContext();
 

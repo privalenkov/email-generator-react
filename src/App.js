@@ -3,6 +3,7 @@ import './App.css';
 import styled from 'styled-components';
 import Template from './components/template.js';
 import Settings from './components/settings.js';
+import RenderBtn from './components/reRender.js';
 
 
 const Header = styled.header`
@@ -46,6 +47,7 @@ function App() {
         <Settings setData={ handleData }/>
         <Template data={ data }/>
       </div>
+      <RenderBtn />
     </div>
   );
 }

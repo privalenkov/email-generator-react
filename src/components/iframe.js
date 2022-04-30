@@ -19,6 +19,12 @@ const ImageContainer = styled.div`
   }
 `;
 
+const FrameContainer = styled.div`
+  iframe {
+    user-select: none;
+  }
+`;
+
 export const IFrame = ({
   children,
   ...props
@@ -36,11 +42,11 @@ export const IFrame = ({
     }, []);
   
     return (
-      <div>
+      <FrameContainer>
         {!mountNode && <ImageContainer><div></div></ImageContainer>}
         <iframe style={{display: !mountNode && 'none' }} {...props} ref={contentRef} title="template">
             { mountNode && createPortal(children, mountNode) }
         </iframe>
-      </div>
+      </FrameContainer>
     )
 }
