@@ -5,7 +5,9 @@ import { Transition } from 'react-transition-group';
 const AlertStyle = styled.div`
     width: 100%;
     background: #1E1E1E;
-    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    padding: 13px 0;
     margin-top: 10px;
     position: relative;
     text-align: left;
@@ -72,7 +74,22 @@ const AlertText = styled.div`
     padding-left: 20px;
 `;
 
-export const Alert = ({title, dispatch, ...props}) => {
+const AlertIcon = styled.div`
+    width: 36px;
+    margin-left: 15px;
+    height: 36px;
+    &.accept {
+        background: url(/iconAcceptAlert.svg) no-repeat center;
+    }
+    &.error {
+        background: url(/iconErrorAlert.svg) no-repeat center;
+    }
+    &.warning {
+        background: url(/iconWarningAlert.svg) no-repeat center;
+    }
+`;
+
+export const Alert = ({title, type, dispatch, ...props}) => {
     const [show, setShow] = useState(true);
 
     const handleClick = () => {
@@ -101,6 +118,7 @@ export const Alert = ({title, dispatch, ...props}) => {
             unmountOnExit
         >
             {state => <AlertStyle className={state}>
+                <AlertIcon className={type.toLowerCase()}/>
                 <AlertText>{title}</AlertText>
                 <CloseBtn onClick={handleClick}><div></div></CloseBtn>
             </AlertStyle>

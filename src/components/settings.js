@@ -107,9 +107,9 @@ const Settings = props => {
         dispatch({
             type: 'ADD_ALERT',
             payload: {
-            id: v4(),
-            title: 'Notification',
-            type: 'INFO',
+                id: v4(),
+                title: 'Notification',
+                type: 'WARNING',
             }
         })
     }
@@ -128,14 +128,14 @@ const Settings = props => {
                 <div>{ file }</div>
             </FileUploaderDND>
             <Title>Header Image Font</Title>
-            <InputText placeholder="Font Size"  style={{marginBottom: '-1px'}}></InputText>
+            <InputText value="1.2" placeholder="Font Size" type="number"  style={{marginBottom: '-1px'}}></InputText>
             <FileUploaderDND title="Upload font-regular" changeInputFile={handleDrop}>
                 <div>{ file }</div>
             </FileUploaderDND>
             <FileUploaderDND title="Upload font-bold" changeInputFile={handleDrop}>
                 <div>{ file }</div>
             </FileUploaderDND>
-            <InputText placeholder="Seed" type="number"  style={{marginTop: '15px'}}></InputText>
+            <InputText value="0" placeholder="Seed" type="number"  style={{marginTop: '15px'}}></InputText>
             <BtnContainer>
                 <ButtonCHIMP>TO MCHIMP</ButtonCHIMP>
                 <ButtonDownload onClick={handleBtn}>DOWNLOAD</ButtonDownload>

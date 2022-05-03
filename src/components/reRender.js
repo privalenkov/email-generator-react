@@ -32,7 +32,7 @@ const RenderBtn = styled.div`
         user-select: none;
         pointer-events: none;
         opacity: 0.7;
-        background: url(/rerender.svg) no-repeat center;
+        background: url(/renderBtnIcon.svg) no-repeat center;
         background-size: contain;
     }
 `;
