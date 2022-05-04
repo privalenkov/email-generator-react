@@ -102,6 +102,11 @@ const Settings = props => {
         setThemeName(e.target.value)
     }
 
+    const [subtitle, setSubtitle] = useState("");
+    const handleSubtitle = (e) => {
+        setSubtitle(e.target.value)
+    }
+
     const handleBtn = (e) => {
         e.preventDefault();
         dispatch({
@@ -115,15 +120,12 @@ const Settings = props => {
     }
     
     useEffect(() => {
-        
-        console.log(themeName)
-        props.setData({themeName});
-        
-    }, [themeName]);
+        props.setData({themeName, subtitle});
+    }, [themeName, subtitle]);
     return (
         <SettingsPanel>
             <InputText type="text" value={ themeName } onChange={handleThemeName} placeholder="Theme Name"></InputText>
-            <InputText placeholder="Image Header Subtitle" style={{marginBottom: '15px'}}></InputText>
+            <InputText type="text" value={ subtitle } onChange={handleSubtitle} placeholder="Image Header Subtitle" style={{marginBottom: '15px'}}></InputText>
             <FileUploaderDND title="Upload screen.jpg" changeInputFile={handleDrop}>
                 <div>{ file }</div>
             </FileUploaderDND>

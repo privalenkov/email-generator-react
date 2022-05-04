@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path');
+const fetch = require('node-fetch'); 
+const { Headers } = require('node-fetch');
 const ipc = ipcMain;
 
 function createWindow () {
@@ -27,12 +29,20 @@ function createWindow () {
   win.webContents.openDevTools()
 
   ipc.on('toMain', (event, args) => {
-    switch (args) {
+    switch (args.type) {
       case 'closeApp':
         win = null;
         if (process.platform !== 'darwin') {
           app.quit();
         }
+        break;
+      case 'getData':
+        const meta = [['Content-Type', 'text/html']];
+        const headers = new Headers(meta);
+        fetch(`https://mobirise.com/extensions/${args.data.toLowerCase()}`, headers).then((res, rej) => {
+          if(!res.ok) return;
+          return res.text()
+        }).then((html) => win.webContents.send("fromMain", html))
         break;
     
       default:
@@ -46,7 +56,7 @@ app.whenReady().then(() => {
   
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow()
+          createWindow()
         }
     })
 })

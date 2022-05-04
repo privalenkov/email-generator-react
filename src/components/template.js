@@ -1,13 +1,68 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { IFrame } from './iframe'
+import useDebounced from '../hooks/useDebounced'
 
 const Template = props => {
     const propsData = props.data;
+    
+    const [description, setDescription] = useState('');
+
+    const ipc = window.api;
     const data = {
-        headerText: propsData?.themeName
-    }
+        headerText: propsData?.themeName.toLowerCase(),
+        themeNameWithoutM5: propsData?.themeName.replace('M5', ''),
+        themeNameUpperFirstAndEndWithM5: propsData?.themeName.replace(/^./, str => str.toUpperCase()).replace(/m5$/, 'M5'),
+        subtitle: propsData?.subtitle && propsData?.subtitle[0].toUpperCase() + propsData?.subtitle.toLowerCase().slice(1),
+        description
+    };
+
+    ipc.receive('fromMain', (data) => {
+        if (!data) return;
+        const parser = new DOMParser();
+        const root = parser.parseFromString(data, "text/html");
+        if (!root) return;
+        
+        const sections = root.querySelectorAll('section');
+        let description = sections[1].textContent;
+        description = description.replace(/LIVE DEMO BUY NOW|Live Demo Buy Now/g, '').trim()
+        description = description.match(/.*Theme.  (.*)/s)[1].trim();
+
+        let demos = sections[3].textContent;
+        demos = demos.replace(/\s\s+(Live Demo\n|LIVE DEMO|Live Demo>|Live Demo >\n)\s\s+/g, ',').split(',');
+        demos.shift();
+        demos.pop();
+
+        let demoLinks = demos.map((str) => str.toLowerCase().replace(/ /ig, '_'));
+        let demoNames = demos.map((str) => {
+            const lower = str.toLowerCase();
+            return lower[0].toUpperCase() + lower.slice(1)
+        });
+
+        let videoLinks = sections[4].querySelectorAll('iframe');
+
+        const videoLink = [...videoLinks].find((el) => {
+            return /www.youtube.com/i.test(el.getAttribute('data-src'))
+        })
+        const YTLink = videoLink.getAttribute('data-src')
+
+        const headerIMG = '../../output/headerOutput.jpg';
+        const landingIMG = '../../output/landingOutput.jpg';
+        const YTIMG = '../../output/YToutput.jpg';
+
+        setDescription(description);
+        // resolve ({ themeName: jsonData.themeName, imageHeaderSubtitle: jsonData.imageHeaderSubtitle.split(' ')[0], description, demoNames, demoLinks, headerIMG, landingIMG, YTIMG, YTLink });
+    })
+
+    const debounced = useDebounced(() => {
+        ipc.send('toMain', { type: 'getData', data:  data.headerText});
+    }, 500);
+
+    useEffect(() => {
+        debounced();
+    }, [data.headerText]);
+
     return (
-        <IFrame width="100%" height="100%">
+        <IFrame width="100%" height="100%" settingsData={data}>
             <table width="100%" border="0" cellPadding="0" cellSpacing="0" align="center" className="full">
                 <tbody>
                     <tr>
@@ -45,7 +100,7 @@ const Template = props => {
                                                                                                 <tr>
                                                                                                     <td width="100%" style={{color: '#000000', fontFamily: '"Jost", roboto, Arial, Helvetica, sans-serif', fontWeight: '400', verticalAlign: 'top', fontSize: '24px', textAlign: 'center', lineHeight: '30px'}} className="fullCenter">
                                                                                                         {/* <b>{{ themeNameUpper }} – {{ imageHeaderSubtitle }} Website Theme</b> */}
-                                                                                                        <b> { data.headerText } –  Website Theme</b>
+                                                                                                        <b> { data.themeNameUpperFirstAndEndWithM5 } – { data.subtitle } Website Theme</b>
                                                                                                     </td>
                                                                                                 </tr>
                                                                                                 <tr>
@@ -53,14 +108,14 @@ const Template = props => {
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <td width="100%" style={{color: '#000000', fontFamily: '"Jost", roboto, Arial, Helvetica, sans-serif', fontWeight: '400', verticalAlign: 'top', fontSize: '18px', textAlign: 'left', lineHeight: '30px'}} className="fullCenter">
-                                                                                                        {/* 
-                                                                                                            {{ description }}
-                                                                                                            <br>
-                                                                                                            <br>View live demo website: 
-                                                                                                            {{#each demoLinks}}
+                                                                                                        
+                                                                                                            { description }
+                                                                                                            <br></br>
+                                                                                                            <br></br>View live demo website: 
+                                                                                                            {/* {{#each demoLinks}}
                                                                                                             <a href="https://mobirise.com/extensions/{{ ../themeName }}/{{this}}/?utm_source=mb_{{  ../themeNameWithoutM5 }}_email&utm_medium=email&utm_campaign=mb_{{ ../themeNameWithoutM5 }}_promo" target="_blank" style="color: #4ea2e3;font-weight: bold;"><strong>{{ lookup ../demoNames @index }}</strong></a>{{#if @last}}.{{else}}, {{/if}}
-                                                                                                            {{/each}}
-                                                                                                        */}
+                                                                                                            {{/each}} */}
+                                                                                                       
                                                                                                         <br></br>
                                                                                                         <br></br>
                                                                                                         View live demo website: 

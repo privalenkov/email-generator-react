@@ -27,25 +27,30 @@ const FrameContainer = styled.div`
 
 export const IFrame = ({
   children,
+  settingsData,
   ...props
 }) => {
+    const ipc = window.api;
     const contentRef = useRef(null);
     let [mountNode, setMountNode] = useState(null);
-    useEffect(() => {
-      contentRef.current.onload = () => {
-        setMountNode(contentRef?.current?.contentWindow?.document?.body);
-      }
-    }, []);
+    let [isLoad, setIsLoad] = useState(false);
 
     useEffect(() => {
       contentRef.current.src="/template.html";
     }, []);
+
+    
+    ipc.receive('fromMain', (data) => {
+      if (!data) return setIsLoad(false);
+      setMountNode(contentRef?.current?.contentWindow?.document?.body);
+      setIsLoad(true);
+    })
   
     return (
       <FrameContainer>
-        {!mountNode && <ImageContainer><div></div></ImageContainer>}
-        <iframe style={{display: !mountNode && 'none' }} {...props} ref={contentRef} title="template">
-            { mountNode && createPortal(children, mountNode) }
+        {!isLoad && <ImageContainer><div></div></ImageContainer>}
+        <iframe style={{display: !isLoad && 'none' }} {...props} ref={contentRef} title="template">
+            { isLoad && createPortal(children, mountNode) }
         </iframe>
       </FrameContainer>
     )
