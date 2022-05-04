@@ -32,9 +32,9 @@ export const IFrame = ({
     const contentRef = useRef(null);
     let [mountNode, setMountNode] = useState(null);
     useEffect(() => {
-      setTimeout(() => {
+      contentRef.current.onload = () => {
         setMountNode(contentRef?.current?.contentWindow?.document?.body);
-      }, 1000);
+      }
     }, []);
 
     useEffect(() => {
