@@ -38,7 +38,7 @@ function App() {
   const ipc = window.api;
   const [data, setData] = useState(null);
   const handleData = (data) => setData(data)
-  const handle = () => ipc.send('toMain', 'closeApp');
+  const handle = () => ipc.send('toMain', {type: 'closeApp'});
 
   return (
     <div className="App">

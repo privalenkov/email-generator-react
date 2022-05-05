@@ -41,7 +41,7 @@ export const IFrame = ({
 
     
     ipc.receive('fromMain', (data) => {
-      if (!data) return setIsLoad(false);
+      if (!data.payload) return setIsLoad(false);
       setMountNode(contentRef?.current?.contentWindow?.document?.body);
       setIsLoad(true);
     })

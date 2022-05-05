@@ -1,68 +1,130 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { IFrame } from './iframe'
+import { AlertContext } from './alert/alertProvider';
+import { v4 } from "uuid";
 import useDebounced from '../hooks/useDebounced'
 
 const Template = props => {
     const propsData = props.data;
+    const dispatch = useContext(AlertContext);
     
     const [description, setDescription] = useState('');
 
     const ipc = window.api;
-    const data = {
+
+    const [data, setData] = useState({
         headerText: propsData?.themeName.toLowerCase(),
+        fileIMG: propsData?.fileIMG,
         themeNameWithoutM5: propsData?.themeName.replace('M5', ''),
         themeNameUpperFirstAndEndWithM5: propsData?.themeName.replace(/^./, str => str.toUpperCase()).replace(/m5$/, 'M5'),
         subtitle: propsData?.subtitle && propsData?.subtitle[0].toUpperCase() + propsData?.subtitle.toLowerCase().slice(1),
         description
-    };
+    });
 
-    ipc.receive('fromMain', (data) => {
-        if (!data) return;
-        const parser = new DOMParser();
-        const root = parser.parseFromString(data, "text/html");
-        if (!root) return;
-        
-        const sections = root.querySelectorAll('section');
-        let description = sections[1].textContent;
-        description = description.replace(/LIVE DEMO BUY NOW|Live Demo Buy Now/g, '').trim()
-        description = description.match(/.*Theme.  (.*)/s)[1].trim();
-
-        let demos = sections[3].textContent;
-        demos = demos.replace(/\s\s+(Live Demo\n|LIVE DEMO|Live Demo>|Live Demo >\n)\s\s+/g, ',').split(',');
-        demos.shift();
-        demos.pop();
-
-        let demoLinks = demos.map((str) => str.toLowerCase().replace(/ /ig, '_'));
-        let demoNames = demos.map((str) => {
-            const lower = str.toLowerCase();
-            return lower[0].toUpperCase() + lower.slice(1)
-        });
-
-        let videoLinks = sections[4].querySelectorAll('iframe');
-
-        const videoLink = [...videoLinks].find((el) => {
-            return /www.youtube.com/i.test(el.getAttribute('data-src'))
-        })
-        const YTLink = videoLink.getAttribute('data-src')
-
-        const headerIMG = '../../output/headerOutput.jpg';
-        const landingIMG = '../../output/landingOutput.jpg';
-        const YTIMG = '../../output/YToutput.jpg';
-
-        setDescription(description);
-        // resolve ({ themeName: jsonData.themeName, imageHeaderSubtitle: jsonData.imageHeaderSubtitle.split(' ')[0], description, demoNames, demoLinks, headerIMG, landingIMG, YTIMG, YTLink });
-    })
-
-    const debounced = useDebounced(() => {
-        ipc.send('toMain', { type: 'getData', data:  data.headerText});
-    }, 500);
+    
 
     useEffect(() => {
-        debounced();
-    }, [data.headerText]);
+        ipc.receive('fromMain', (data) => {
+            console.log(data)
+            if (data.errors.length) {
+                return dispatch({
+                    type: 'ADD_ALERT',
+                    payload: {
+                        id: v4(),
+                        title: 'Something went wrong :(',
+                        type: 'ERROR',
+                    }
+                })
+            };
+
+            if (!data.payload) {
+                return dispatch({
+                    type: 'ADD_ALERT',
+                    payload: {
+                        id: v4(),
+                        title: 'Theme not found',
+                        type: 'ERROR',
+                    }
+                })
+            }
+            const parser = new DOMParser();
+            const root = parser.parseFromString(data.payload, "text/html");
+            if (!root) return;
+
+            try {
+                const sections = root.querySelectorAll('section');
+                let description = sections[1].textContent;
+                description = description.replace(/LIVE DEMO BUY NOW|Live Demo Buy Now/g, '').trim()
+                description = description.match(/.*Theme.  (.*)/s)[1].trim();
+        
+                let demos = sections[3].textContent;
+                demos = demos.replace(/\s\s+(Live Demo\n|LIVE DEMO|Live Demo>|Live Demo >\n)\s\s+/g, ',').split(',');
+                demos.shift();
+                demos.pop();
+        
+                let demoLinks = demos.map((str) => str.toLowerCase().replace(/ /ig, '_'));
+                let demoNames = demos.map((str) => {
+                    const lower = str.toLowerCase();
+                    return lower[0].toUpperCase() + lower.slice(1)
+                });
+        
+                let videoLinks = sections[4].querySelectorAll('iframe');
+        
+                const videoLink = [...videoLinks].find((el) => {
+                    return /www.youtube.com/i.test(el.getAttribute('data-src'))
+                })
+                const YTLink = videoLink.getAttribute('data-src')
+        
+                const headerIMG = '../../output/headerOutput.jpg';
+                const landingIMG = '../../output/landingOutput.jpg';
+                const YTIMG = '../../output/YToutput.jpg';
+                setDescription(description);
+                dispatch({
+                    type: 'ADD_ALERT',
+                    payload: {
+                        id: v4(),
+                        title: 'Landing successfully created',
+                        type: 'ACCEPT',
+                    }
+                })
+                
+            } catch (error) {
+                return dispatch({
+                    type: 'ADD_ALERT',
+                    payload: {
+                        id: v4(),
+                        title: 'Something went wrong :(',
+                        type: 'ERROR',
+                    }
+                })
+            }
+            
+            // resolve ({ themeName: jsonData.themeName, imageHeaderSubtitle: jsonData.imageHeaderSubtitle.split(' ')[0], description, demoNames, demoLinks, headerIMG, landingIMG, YTIMG, YTLink });
+        })
+    }, [])
+
+
+    const debounced = useDebounced(() => {
+        if(data.headerText && data.subtitle && data.fileIMG) ipc.send('toMain', { type: 'getData', data: data});
+    }, 500);
+    useEffect(() => {
+        setData({
+            headerText: propsData?.themeName.toLowerCase(),
+            fileIMG: propsData?.fileIMG,
+            themeNameWithoutM5: propsData?.themeName.replace('M5', ''),
+            themeNameUpperFirstAndEndWithM5: propsData?.themeName.replace(/^./, str => str.toUpperCase()).replace(/m5$/, 'M5'),
+            subtitle: propsData?.subtitle && propsData?.subtitle[0].toUpperCase() + propsData?.subtitle.toLowerCase().slice(1),
+            description
+        });
+    }, [propsData])
+    useEffect(() => {
+        debounced()
+    }, [data])
+    // debounced();
+    // useEffect(() => debounced, [data]);
 
     return (
-        <IFrame width="100%" height="100%" settingsData={data}>
+        <IFrame width="100%" height="100%" settingsData={data.headerText}>
             <table width="100%" border="0" cellPadding="0" cellSpacing="0" align="center" className="full">
                 <tbody>
                     <tr>

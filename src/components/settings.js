@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import styled from 'styled-components';
 import FileUploaderDND from './dragAndDrop';
-import { AlertContext } from './alert/alertProvider';
-import { v4 } from "uuid";
+import InputText from "./inputText";
 
 const SettingsPanel = styled.div`
     padding: .5rem 1rem;
@@ -19,20 +18,6 @@ const SettingsPanel = styled.div`
         border-radius: 20px;
     }
 `;
-const InputText = styled.input`
-    border: none;
-    placeholder-color: #fff;
-    padding: 12px 20px;
-    background: #F2F2F2;
-    color: #737373;
-    width: auto;
-    border-radius: 25px;
-    margin: .3rem 0;
-    ::placeholder { iii
-        color: #C0C0C0;
-    }
-    outline: none;
-`;
 
 const Title = styled.div`
     font-size: 13px;
@@ -47,7 +32,7 @@ const ButtonCHIMP = styled.button`
     margin-right: 10px;
     cursor: pointer;
     width: 100%;
-    padding: 15px 17px;
+    padding: 15px 0;
     text-align: center;
     font-weight: 700;
     font-size: 10px;
@@ -67,12 +52,12 @@ const ButtonDownload = styled.button`
     border:none;
     margin-left: 10px;
     cursor: pointer;
-    padding: 15px 17px;
+    padding: 15px 0;
     text-align: center;
     font-weight: 700;
     font-size: 10px;
     color: #fff;
-    width: 100%;
+    width: 50%;
     transition: background .1s;
     background: #6592E6;
     border-radius: 25px;
@@ -90,57 +75,57 @@ const BtnContainer = styled.div`
     margin-top: 15px;
 `
 const Settings = props => {
-    const dispatch = useContext(AlertContext);
-    const [file, setFile] = useState(null);
-    const handleDrop = (file) => {
-        console.log(file);
-        setFile(file);
+    const [fileIMG, setFileIMG] = useState(null);
+    const handleDropImg = (file) => {
+        setFileIMG(file.path);
+    }
+    const [fileFontReg, setFileFontReg] = useState(null);
+    const handleDropFontReg = (file) => {
+        setFileFontReg(file.path);
+    }
+    const [fileFontBold, setFileFontBold] = useState(null);
+    const handleDropFontBold = (file) => {
+        setFileFontBold(file.path);
     }
 
-    const [themeName, setThemeName] = useState("");
+    const [themeName, setThemeName] = useState('');
     const handleThemeName = (e) => {
         setThemeName(e.target.value)
     }
 
-    const [subtitle, setSubtitle] = useState("");
+    const [subtitle, setSubtitle] = useState('');
     const handleSubtitle = (e) => {
         setSubtitle(e.target.value)
     }
 
     const handleBtn = (e) => {
         e.preventDefault();
-        dispatch({
-            type: 'ADD_ALERT',
-            payload: {
-                id: v4(),
-                title: 'Notification',
-                type: 'WARNING',
-            }
-        })
     }
     
     useEffect(() => {
-        props.setData({themeName, subtitle});
-    }, [themeName, subtitle]);
+        props.setData({themeName, subtitle, fileIMG, fileFontReg, fileFontBold});
+    }, [themeName, subtitle, fileIMG, fileFontReg, fileFontBold]);
     return (
         <SettingsPanel>
-            <InputText type="text" value={ themeName } onChange={handleThemeName} placeholder="Theme Name"></InputText>
-            <InputText type="text" value={ subtitle } onChange={handleSubtitle} placeholder="Image Header Subtitle" style={{marginBottom: '15px'}}></InputText>
-            <FileUploaderDND title="Upload screen.jpg" changeInputFile={handleDrop}>
-                <div>{ file }</div>
+            <InputText required type="text" value={ themeName } onChange={handleThemeName} placeholder="Theme Name"></InputText>
+            <InputText required type="text" value={ subtitle } onChange={handleSubtitle} placeholder="Image Header Subtitle" style={{marginBottom: '15px'}}></InputText>
+            <FileUploaderDND required accept=".png, .jpeg, .jpg" id="input-header" title="Upload screen.jpg" changeInputFile={handleDropImg}>
+                { fileIMG }
             </FileUploaderDND>
             <Title>Header Image Font</Title>
-            <InputText value="1.2" placeholder="Font Size" type="number"  style={{marginBottom: '-1px'}}></InputText>
-            <FileUploaderDND title="Upload font-regular" changeInputFile={handleDrop}>
-                <div>{ file }</div>
+            <InputText placeholder="Font Size" type="number" style={{marginBottom: '-1px'}}></InputText>
+            <div style={{margin: '5px'}}></div>
+            <FileUploaderDND accept=".ttf" id="input-font-regular"  title="Upload font-regular" changeInputFile={handleDropFontReg}>
+                { fileFontReg }
             </FileUploaderDND>
-            <FileUploaderDND title="Upload font-bold" changeInputFile={handleDrop}>
-                <div>{ file }</div>
+            <div style={{margin: '5px'}}></div>
+            <FileUploaderDND accept=".ttf" id="input-font-bold"  title="Upload font-bold" changeInputFile={handleDropFontBold}>
+                { fileFontBold }
             </FileUploaderDND>
-            <InputText value="0" placeholder="Seed" type="number"  style={{marginTop: '15px'}}></InputText>
+            <InputText placeholder="Seed" type="number" style={{marginTop: '15px'}}></InputText>
             <BtnContainer>
-                <ButtonCHIMP>TO MCHIMP</ButtonCHIMP>
-                <ButtonDownload onClick={handleBtn}>DOWNLOAD</ButtonDownload>
+                <ButtonCHIMP>UPLOAD TO MCHIMP</ButtonCHIMP>
+                <ButtonDownload onClick={handleBtn}>SAVE</ButtonDownload>
             </BtnContainer>
         </SettingsPanel>
     );

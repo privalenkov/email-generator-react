@@ -37,12 +37,14 @@ function createWindow () {
         }
         break;
       case 'getData':
+        if (!args.data) return;
         const meta = [['Content-Type', 'text/html']];
         const headers = new Headers(meta);
-        fetch(`https://mobirise.com/extensions/${args.data.toLowerCase()}`, headers).then((res, rej) => {
+        fetch(`https://mobirise.com/extensions/${args.data.headerText.toLowerCase()}`, headers).then((res, rej) => {
           if(!res.ok) return;
           return res.text()
-        }).then((html) => win.webContents.send("fromMain", html))
+        }).then((html) => win.webContents.send("fromMain", {errors: [], payload: html}))
+        .catch((err) => win.webContents.send("fromMain", {errors: [err], payload: null}))
         break;
     
       default:

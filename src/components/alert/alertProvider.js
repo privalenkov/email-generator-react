@@ -30,7 +30,6 @@ export const AlertProvider = props => {
             <AlertContainerStyle>
                 <TransitionGroup>
                     {state.map((alert) => {
-                        console.log(alert)
                         return <Alert dispatch={dispatch} key={alert.id} {...alert} />
                     }) }
                 </TransitionGroup>
